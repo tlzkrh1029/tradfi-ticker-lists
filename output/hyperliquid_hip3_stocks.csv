@@ -1,6 +1,6 @@
 ﻿coin,dex,dex_name,ticker,display_name,category,reference_listing,asset_class,asset_source,annotation_says_etf,security_name,binance_equity_type,max_leverage,collateral_token,delisted,description
 io:DRAM,io,EntropyIO,DRAM,DRAM,stocks,US: DRAM,etf,nasdaq (displayName),False,Roundhill Memory ETF,etf,25,0,False,
-io:EWY,io,EntropyIO,EWY,,(none),US: EWY,etf,nasdaq (coin name),False,iShares MSCI South Korea ETF,etf,25,0,False,
+io:EWY,io,EntropyIO,EWY,,(none),,unknown,uncategorized; coin name matches US etf EWY (iShares MSCI South Korea ETF),False,,,25,0,False,
 io:GPRO,io,EntropyIO,GPRO,GOPRO,stocks,US: GPRO,stock,nasdaq (coin name),False,"GoPro, Inc. - Class A Common Stock",stock,5,0,False,
 io:IONQ,io,EntropyIO,IONQ,IONQ,stocks,US: IONQ,stock,nasdaq (displayName),False,"IonQ, Inc. Common Stock",stock,10,0,False,
 io:NBIS,io,EntropyIO,NBIS,NBIS,stocks,US: NBIS,stock,nasdaq (displayName),False,Nebius Group N.V. - Class A Ordinary Shares,stock,15,0,False,

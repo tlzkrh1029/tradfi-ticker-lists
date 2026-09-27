@@ -55,9 +55,11 @@ BSTOCKS_PERMISSION_GROUP = "TRD_GRP_261"
 
 UNDERLYING_MARKET = {"EQUITY": "US", "HK_EQUITY": "HK", "KR_EQUITY": "KR", "CN_EQUITY": "CN"}
 
-# Binance TradFi perps on non-US listings, verified against the Binance
-# listing announcements (2026-09). Binance publishes no machine-readable
-# name or code for KR/CN contracts, so new ones show up as "unknown".
+# Binance TradFi perps on non-US listings (2026-09). 22 codes are printed in
+# the Binance listing announcements; HYUNDAI, SAMSUNG and SKHYNIX are named
+# without a code there and are mapped to the common-share KRX codes. Binance
+# publishes no machine-readable code for KR/CN contracts, so new ones show
+# up as "unknown".
 NON_US_UNDERLYINGS = {
     "BYD": ("HKEX:1211", "BYD Company Limited (H shares)", "stock"),
     "CSOPSAMSUNG2L": ("HKEX:7747", "CSOP Samsung Electronics Daily (2x) Leveraged Product", "etf"),
@@ -341,6 +343,11 @@ CATEGORY_CLASS = {"indices": "index", "commodities": "commodity", "fx": "fx", "p
                   "crypto": "crypto", "rates": "rates"}
 
 
+def normalize_category(c):
+    c = (c or "").strip().lower()
+    return {"stock": "stocks"}.get(c, c)  # deployers spell it both ways
+
+
 def reference_listing(description):
     """First "(EXCHANGE: TICKER)" in an annotation, else (None, None)."""
     m = REFERENCE_RE.search(description or "")
@@ -363,10 +370,9 @@ def hyperliquid_hip3(us, include_delisted=False, categories=("stocks",)):
         metas = list(ex.map(dex_meta, dexes))
 
     def category(coin):
-        c = (concise.get(coin, {}).get("category") or "").lower()
-        return {"stock": "stocks"}.get(c, c)
+        return normalize_category(concise.get(coin, {}).get("category"))
 
-    candidates, review = [], []
+    candidates, uncategorized, kept = [], [], []
     for d, meta in metas:
         active = [u for u in meta["universe"] if include_delisted or not u.get("isDelisted")]
         equity_dex = any(category(u["name"]) == "stocks" for u in active)
@@ -375,11 +381,13 @@ def hyperliquid_hip3(us, include_delisted=False, categories=("stocks",)):
             if cat in categories:
                 candidates.append((d, meta, u, cat))
             elif not cat:
-                # No annotation at all (io:EWY). Keep it only on a dex that
-                # lists stocks and only if the ticker is a US listing.
-                keep = "stocks" in categories and equity_dex and us.known(coin.split(":", 1)[1])
-                review.append(coin)
-                if keep:
+                # No annotation at all (io:EWY). Keep it for review, as
+                # "unknown", only on a dex that lists stocks and only if the
+                # coin name is a US listing; the name alone proves nothing
+                # (mkts:GOLD is not Gold.com, Inc.).
+                uncategorized.append(coin)
+                if "stocks" in categories and equity_dex and us.known(coin.split(":", 1)[1]):
+                    kept.append(coin)
                     candidates.append((d, meta, u, cat))
 
     def full_annotation(coin):
@@ -409,24 +417,31 @@ def hyperliquid_hip3(us, include_delisted=False, categories=("stocks",)):
             asset_class, source = CATEGORY_CLASS.get(cat, cat), "category"
         else:
             asset_class, source = "unknown", ""
+            # The annotation's own ticker beats the coin name (xyz:PURRDAT
+            # references Nasdaq: PURR; mkts:USBOND has displayName TLT).
+            # displayName and coin name are trusted only when the deployer
+            # categorised the coin and the annotation was read: a failed read
+            # would otherwise turn xyz:SKHX (KRX 000660) into the US 2x ETF SKHX.
+            keys = [(ref, "annotation ticker")]
+            if cat and not err:
+                keys += [(display, "displayName"), (ticker, "coin name")]
             if us_ref:
-                # The annotation's own ticker beats the coin name (xyz:PURRDAT
-                # references Nasdaq: PURR; mkts:USBOND has displayName TLT).
-                for key, src in ((ref, "annotation ticker"), (display, "displayName"), (ticker, "coin name")):
+                for key, src in keys:
                     if key and us.known(key):
                         asset_class, us_sym, sec_name, bn_type = us.classify(key)
                         listing = listing or f"US: {us_sym}"
                         source = f"nasdaq ({src})"
                         break
-            if asset_class == "unknown" and not err:
+            if asset_class == "unknown" and cat and not err:
                 # Non-US listing (KRX, HKEX, SSE, TSE) or no usable ticker:
-                # the coin name may collide with an unrelated US symbol
-                # (xyz:SKHX is KRX 000660, US "SKHX" is a 2x ETF), so read
-                # the annotation text instead.
+                # read the annotation text instead of the coin name.
                 if says_etf:
                     asset_class, source = "etf", "annotation"
                 elif SHARE_TEXT.search(description):
                     asset_class, source = "stock", "annotation"
+            if asset_class == "unknown" and not cat:
+                hint, us_sym, hint_name, _ = us.classify(ticker)
+                source = f"uncategorized; coin name matches US {hint} {us_sym} ({hint_name})"
         if err:
             source = (source + "; " if source else "") + "perpAnnotation failed"
         rows.append({
@@ -447,7 +462,7 @@ def hyperliquid_hip3(us, include_delisted=False, categories=("stocks",)):
             "delisted": bool(u.get("isDelisted")),
             "description": description.replace("\n", " "),
         })
-    extra = {"uncategorized_coins": review, "dex_errors": errors,
+    extra = {"uncategorized_coins": uncategorized, "uncategorized_kept": kept, "dex_errors": errors,
              "annotation_errors": [c[2]["name"] for c, (_, e) in zip(candidates, details) if e]}
     return sorted(rows, key=lambda r: (r["dex"], r["ticker"])), extra
 
@@ -501,11 +516,27 @@ def main():
                     help="comma-separated Hyperliquid categories to keep (e.g. stocks,indices)")
     args = ap.parse_args()
     os.makedirs(args.out, exist_ok=True)
-    categories = tuple(c.strip().lower() for c in args.hl_categories.split(",") if c.strip())
+    categories = tuple(normalize_category(c) for c in args.hl_categories.split(",") if c.strip())
+    summary = {"generated_at": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
 
-    us = UsDirectory()
-    summary = {"generated_at": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-               "binance_equity_catalog_error": us.binance_error or None}
+    def finish(code):
+        with open(os.path.join(args.out, "summary.json"), "w", encoding="utf-8") as f:
+            json.dump(summary, f, indent=2, ensure_ascii=False)
+        json.dump(summary, sys.stdout, indent=2, ensure_ascii=False)
+        print()
+        sys.exit(code)
+
+    try:
+        us = UsDirectory()
+    except Exception as e:
+        # Without the directory nothing can be classified; blank every CSV
+        # so no earlier snapshot passes for this run.
+        for name, fields in FIELDS.items():
+            write_csv(os.path.join(args.out, f"{name}.csv"), fields, [])
+        summary["error"] = f"Nasdaq Trader symbol directory: {e!r}"
+        print(summary["error"], file=sys.stderr)
+        finish(1)
+    summary["binance_equity_catalog_error"] = us.binance_error or None
     review = {}
     jobs = {
         "binance_spot_bstocks": lambda: binance_spot_bstocks(us),
@@ -518,6 +549,7 @@ def main():
             rows, extra = job()
         except Exception as e:
             failed = True
+            write_csv(os.path.join(args.out, f"{name}.csv"), FIELDS[name], [])
             summary[name] = {"error": repr(e)}
             print(f"{name}: {e!r}", file=sys.stderr)
             continue
@@ -527,23 +559,32 @@ def main():
             summary[name]["by_underlying_type"] = count(rows, "underlying_type")
         if name == "hyperliquid_hip3_stocks":
             summary[name]["by_dex"] = count(rows, "dex")
-        review[name] = {
-            "unknown": [r.get("symbol") or r.get("coin") for r in rows if r["asset_class"] == "unknown"],
-            "nasdaq_vs_binance_catalog": class_conflicts(rows),
+        r = review[name] = {
+            "unknown": [x.get("symbol") or x.get("coin") for x in rows if x["asset_class"] == "unknown"],
+            # None = the Binance catalog was unavailable, so nothing was compared
+            "nasdaq_vs_binance_catalog": None if us.binance_error else class_conflicts(rows),
         }
+        if not rows:
+            r["no_rows"] = True
+        if name == "binance_spot_bstocks":
+            for k in ("assets_without_spot_pair", f"only_in_{BSTOCKS_PERMISSION_GROUP}",
+                      f"missing_from_{BSTOCKS_PERMISSION_GROUP}"):
+                r[k] = extra[k]
         if name == "binance_futures_tradfi":
             # without constituents an aliased contract (BBX, STXX) is looked up under the wrong ticker
-            review[name]["us_ticker_not_confirmed"] = [
-                r["symbol"] for r in rows if r["market"] == "US" and r["ticker_source"] != "constituents"]
-        if not rows:
-            print(f"warning: {name} returned 0 rows", file=sys.stderr)
+            r["us_ticker_not_confirmed"] = [
+                x["symbol"] for x in rows if x["market"] == "US" and x["ticker_source"] != "constituents"]
+            r["trading_but_not_in_exchange_info"] = extra.get("trading_but_not_in_exchange_info")
+            if "ticker_check_error" in extra:
+                r["ticker_check_error"] = extra["ticker_check_error"]
+        if name == "hyperliquid_hip3_stocks":
+            for k in ("uncategorized_kept", "dex_errors", "annotation_errors"):
+                r[k] = extra[k]
     summary["review"] = review
 
-    with open(os.path.join(args.out, "summary.json"), "w", encoding="utf-8") as f:
-        json.dump(summary, f, indent=2, ensure_ascii=False)
-    json.dump(summary, sys.stdout, indent=2, ensure_ascii=False)
-    print()
-    sys.exit(1 if failed else 0)
+    # 1 = a venue failed, 2 = lists written but something needs a manual look
+    attention = bool(us.binance_error) or any(v for r in review.values() for v in r.values())
+    finish(1 if failed else 2 if attention else 0)
 
 
 if __name__ == "__main__":
