@@ -1,0 +1,81 @@
+﻿symbol,base_asset,quote_asset,underlying,binance_name,asset_class,us_listing,us_security_name,binance_equity_type,status,dividend_multiplier
+AAOIBUSDT,AAOIB,USDT,AAOI,Applied Optoelectronics,stock,AAOI,"Applied Optoelectronics, Inc. - Common Stock",stock,TRADING,1
+AAPLBUSDT,AAPLB,USDT,AAPL,Apple,stock,AAPL,Apple Inc. - Common Stock,stock,TRADING,1.000603906075632366
+AGPUBUSDT,AGPUB,USDT,AGPU,Axe Compute,stock,AGPU,Axe Compute Inc. - Common Stock,stock,TRADING,1
+ALABBUSDT,ALABB,USDT,ALAB,Astera Labs,stock,ALAB,"Astera Labs, Inc. - Common Stock",stock,TRADING,1
+AMATBUSDT,AMATB,USDT,AMAT,Applied Materials,stock,AMAT,"Applied Materials, Inc. - Common Stock",stock,TRADING,1.000748400440519121
+AMCBUSDT,AMCB,USDT,AMC,AMC Entertainment Holdings,stock,AMC,"AMC Entertainment Holdings, Inc. Class A Common Stock",stock,TRADING,1
+AMDBUSDT,AMDB,USDT,AMD,Advanced Micro Devices,stock,AMD,"Advanced Micro Devices, Inc. - Common Stock",stock,TRADING,1
+AMZNBUSDT,AMZNB,USDT,AMZN,Amazon,stock,AMZN,"Amazon.com, Inc. - Common Stock",stock,TRADING,1
+ARMBUSDT,ARMB,USDT,ARM,ARM,stock,ARM,Arm Holdings plc - American Depositary Shares,stock,TRADING,1
+ASMLBUSDT,ASMLB,USDT,ASML,ASML,stock,ASML,ASML Holding N.V. - New York Registry Shares,stock,TRADING,1
+ASTSBUSDT,ASTSB,USDT,ASTS,AST SpaceMobile,stock,ASTS,"AST SpaceMobile, Inc. - Class A Common Stock",stock,TRADING,1
+AVGOBUSDT,AVGOB,USDT,AVGO,Broadcom,stock,AVGO,Broadcom Inc. - Common Stock,stock,TRADING,1.001269208611258122
+AXTIBUSDT,AXTIB,USDT,AXTI,AXT,stock,AXTI,AXT Inc - Common Stock,stock,TRADING,1
+BABABUSDT,BABAB,USDT,BABA,Alibaba,stock,BABA,Alibaba Group Holding Limited American Depositary Shares each representing eight Ordinary share,stock,TRADING,1
+BEBUSDT,BEB,USDT,BE,Bloom Energy,stock,BE,Bloom Energy Corporation Class A Common Stock,stock,TRADING,1
+BMNRBUSDT,BMNRB,USDT,BMNR,BitMine Immersion Technologies,stock,BMNR,"BitMine Immersion Technologies, Inc. Common Stock",stock,TRADING,1
+BNCBUSDT,BNCB,USDT,BNC,CEA Industries,stock,BNC,CEA Industries Inc. - Common Stock,stock,TRADING,1
+CBRSBUSDT,CBRSB,USDT,CBRS,Cerebras,stock,CBRS,Cerebras Systems Inc. - Class A Common Stock,stock,TRADING,1
+COHRBUSDT,COHRB,USDT,COHR,Coherent,stock,COHR,Coherent Corp. Common Stock,stock,TRADING,1
+COINBUSDT,COINB,USDT,COIN,Coinbase,stock,COIN,"Coinbase Global, Inc. - Class A Common Stock",stock,TRADING,1
+CRCLBUSDT,CRCLB,USDT,CRCL,Circle Internet Group,stock,CRCL,"Circle Internet Group, Inc. Class A Common Stock",stock,TRADING,1
+CRDOBUSDT,CRDOB,USDT,CRDO,Credo Technology,stock,CRDO,Credo Technology Group Holding Ltd - Ordinary Shares,stock,TRADING,1
+CRMBUSDT,CRMB,USDT,CRM,Salesforce,stock,CRM,"Salesforce, Inc. Common Stock",stock,TRADING,1.001229509379034956
+CRWDBUSDT,CRWDB,USDT,CRWD,CrowdStrike,stock,CRWD,"CrowdStrike Holdings, Inc. - Class A Common Stock",stock,TRADING,1
+CRWVBUSDT,CRWVB,USDT,CRWV,CoreWeave,stock,CRWV,"CoreWeave, Inc. - Class A Common Stock",stock,TRADING,1
+CYPHBUSDT,CYPHB,USDT,CYPH,Cypherpunk Technologies,stock,CYPH,Cypherpunk Technologies Inc. - Common Stock,stock,TRADING,1
+DELLBUSDT,DELLB,USDT,DELL,Dell,stock,DELL,Dell Technologies Inc. Class C Common Stock,stock,TRADING,1
+DJTBUSDT,DJTB,USDT,DJT,Trump Media & Technology Group,stock,DJT,Trump Media & Technology Group Corp. - Common Stock,stock,TRADING,1
+DRAMBUSDT,DRAMB,USDT,DRAM,Roundhill Memory ETF,etf,DRAM,Roundhill Memory ETF,etf,TRADING,1
+EWYBUSDT,EWYB,USDT,EWY,iShares MSCI South Korea ETF,etf,EWY,iShares MSCI South Korea ETF,etf,TRADING,1
+FLNCBUSDT,FLNCB,USDT,FLNC,Fluence Energy,stock,FLNC,"Fluence Energy, Inc. - Class A Common Stock",stock,TRADING,1
+GLWBUSDT,GLWB,USDT,GLW,Corning,stock,GLW,Corning Incorporated Common Stock,stock,TRADING,1.00129026931256489
+GMEBUSDT,GMEB,USDT,GME,GameStop,stock,GME,GameStop Corporation Common Stock,stock,TRADING,1
+GOOGLBUSDT,GOOGLB,USDT,GOOGL,Alphabet,stock,GOOGL,Alphabet Inc. - Class A Common Stock,stock,TRADING,1.000478058978107511
+GPROBUSDT,GPROB,USDT,GPRO,GoPro,stock,GPRO,"GoPro, Inc. - Class A Common Stock",stock,TRADING,1
+GSBUSDT,GSB,USDT,GS,Goldman Sachs,stock,GS,"Goldman Sachs Group, Inc. (The) Common Stock",stock,TRADING,1.003406278840750514
+HIMSBUSDT,HIMSB,USDT,HIMS,Hims & Hers,stock,HIMS,"Hims & Hers Health, Inc. Class A Common Stock",stock,TRADING,1
+HOODBUSDT,HOODB,USDT,HOOD,Robinhood,stock,HOOD,"Robinhood Markets, Inc. - Class A Common Stock",stock,TRADING,1
+IBMBUSDT,IBMB,USDT,IBM,IBM,stock,IBM,International Business Machines Corporation Common Stock,stock,TRADING,1.005005801623174456
+INTCBUSDT,INTCB,USDT,INTC,Intel,stock,INTC,Intel Corporation - Common Stock,stock,TRADING,1
+INTWBUSDT,INTWB,USDT,INTW,GraniteShares 2X Long INTC ETF,etf,INTW,GraniteShares 2x Long INTC Daily ETF,etf,TRADING,1
+IRENBUSDT,IRENB,USDT,IREN,IREN Limited,stock,IREN,IREN Limited - Ordinary Shares,stock,TRADING,1
+KORUBUSDT,KORUB,USDT,KORU,South Korea Bull 3X ETF,etf,KORU,Direxion Daily South Korea Bull 3X ETF,etf,TRADING,1
+LITEBUSDT,LITEB,USDT,LITE,Lumentum,stock,LITE,Lumentum Holdings Inc. - Common Stock,stock,TRADING,1
+METABUSDT,METAB,USDT,META,Meta,stock,META,"Meta Platforms, Inc. - Class A Common Stock",stock,TRADING,1.00054829041074495
+MRNABUSDT,MRNAB,USDT,MRNA,Moderna,stock,MRNA,"Moderna, Inc. - Common Stock",stock,TRADING,1
+MRVLBUSDT,MRVLB,USDT,MRVL,Marvell Technology,stock,MRVL,"Marvell Technology, Inc. - Common Stock",stock,TRADING,1
+MSFTBUSDT,MSFTB,USDT,MSFT,Microsoft,stock,MSFT,Microsoft Corporation - Common Stock,stock,TRADING,1.001313964833366845
+MSTRBUSDT,MSTRB,USDT,MSTR,Strategy,stock,MSTR,Strategy Inc - Class A Common Stock,stock,TRADING,1
+MUBUSDT,MUB,USDT,MU,Micron Technology,stock,MU,"Micron Technology, Inc. - Common Stock",stock,TRADING,1.000107512568805603
+MUUBUSDT,MUUB,USDT,MUU,Direxion MU Bull 2X ETF,etf,MUU,Direxion Daily MU Bull 2X ETF,etf,TRADING,1.003951968068627743
+MVLLBUSDT,MVLLB,USDT,MVLL,GraniteShares 2X Long MRVL ETF,etf,MVLL,GraniteShares 2x Long MRVL Daily ETF,etf,TRADING,1
+NBISBUSDT,NBISB,USDT,NBIS,Nebius,stock,NBIS,Nebius Group N.V. - Class A Ordinary Shares,stock,TRADING,1
+NFLXBUSDT,NFLXB,USDT,NFLX,Netflix,stock,NFLX,"Netflix, Inc. - Common Stock",stock,TRADING,1
+NOKBUSDT,NOKB,USDT,NOK,Nokia,stock,NOK,Nokia Corporation Sponsored American Depositary Shares,stock,TRADING,1.002349416320445721
+NVDABUSDT,NVDAB,USDT,NVDA,NVIDIA,stock,NVDA,NVIDIA Corporation - Common Stock,stock,TRADING,1.000778223752807865
+ORCLBUSDT,ORCLB,USDT,ORCL,Oracle,stock,ORCL,Oracle Corporation Common Stock,stock,TRADING,1
+PLTRBUSDT,PLTRB,USDT,PLTR,Palantir,stock,PLTR,Palantir Technologies Inc. - Class A Common Stock,stock,TRADING,1
+PYPLBUSDT,PYPLB,USDT,PYPL,Paypal,stock,PYPL,"PayPal Holdings, Inc. - Common Stock",stock,TRADING,1.001771778812964209
+QCOMBUSDT,QCOMB,USDT,QCOM,Qualcomm,stock,QCOM,QUALCOMM Incorporated - Common Stock,stock,TRADING,1.003804323223530061
+QNTBUSDT,QNTB,USDT,QNT,Quantinuum,stock,QNT,Quantinuum Inc. - Class A Common Stock,stock,TRADING,1
+QQQBUSDT,QQQB,USDT,QQQ,Invesco QQQ Trust,etf,QQQ,"Invesco QQQ Trust, Series 1",etf,TRADING,1.000724838657573033
+RDDTBUSDT,RDDTB,USDT,RDDT,Reddit,stock,RDDT,"Reddit, Inc. Class A Common Stock",stock,TRADING,1
+RKLBBUSDT,RKLBB,USDT,RKLB,Rocket Lab,stock,RKLB,Rocket Lab Corporation - Common Stock,stock,TRADING,1
+SKHYBUSDT,SKHYB,USDT,SKHY,SK Hynix,stock,SKHY,SK hynix Inc. - American Depositary Shares,stock,TRADING,1
+SMCIBUSDT,SMCIB,USDT,SMCI,Super Micro Computer,stock,SMCI,"Super Micro Computer, Inc. - Common Stock",stock,TRADING,1
+SMHBUSDT,SMHB,USDT,SMH,VanEck Semiconductor ETF,etf,SMH,VanEck Semiconductor ETF,etf,TRADING,1
+SNDKBUSDT,SNDKB,USDT,SNDK,SanDisk,stock,SNDK,Sandisk Corporation - Common Stock When-Issued,stock,TRADING,1
+SNXXBUSDT,SNXXB,USDT,SNXX,Tradr 2X Long SNDK ETF,etf,SNXX,Tradr 2X Long SNDK Daily ETF,etf,TRADING,1
+SOXLBUSDT,SOXLB,USDT,SOXL,Semicon Bull 3X ETF,etf,SOXL,Direxion Daily Semiconductor Bull 3X ETF,etf,TRADING,1.000441939278863313
+SOXSBUSDT,SOXSB,USDT,SOXS,Direxion Semiconductor Bear 3X ETF,etf,SOXS,Direxion Daily Semiconductor Bear 3X ETF,etf,TRADING,1.009026219854107205
+SPCXBUSDT,SPCXB,USDT,SPCX,SpaceX,stock,SPCX,Space Exploration Technologies Corp. - Class A Common Stock,stock,TRADING,1
+SPYBUSDT,SPYB,USDT,SPY,SPY,etf,SPY,State Street SPDR S&P 500 ETF Trust,etf,TRADING,1.001729792036835231
+SQQQBUSDT,SQQQB,USDT,SQQQ,ProShares UltraPro Short QQQ,etf,SQQQ,ProShares UltraPro Short QQQ,etf,TRADING,1.009841016242566331
+STXBUSDT,STXB,USDT,STX,Seagate,stock,STX,Seagate Technology Holdings PLC - Ordinary Shares (Ireland),stock,TRADING,1.00055924717844473
+TQQQBUSDT,TQQQB,USDT,TQQQ,ProShares UltraPro QQQ,etf,TQQQ,ProShares UltraPro QQQ,etf,TRADING,1.001347622058686173
+TSLABUSDT,TSLAB,USDT,TSLA,Tesla,stock,TSLA,"Tesla, Inc.  - Common Stock",stock,TRADING,1
+TSMBUSDT,TSMB,USDT,TSM,TSMC,stock,TSM,Taiwan Semiconductor Manufacturing Company Ltd.,stock,TRADING,1.002110464141050983
+USARBUSDT,USARB,USDT,USAR,USA Rare Earth,stock,USAR,"USA Rare Earth, Inc. - Common Stock",stock,TRADING,1
+WDCBUSDT,WDCB,USDT,WDC,Western Digital,stock,WDC,Western Digital Corporation - Common Stock,stock,TRADING,1.000224983929808861

@@ -1,0 +1,67 @@
+{
+  "generated_at": "2026-09-27T11:07:46Z",
+  "binance_equity_catalog_error": null,
+  "binance_spot_bstocks": {
+    "count": 80,
+    "by_asset_class": {
+      "etf": 14,
+      "stock": 66
+    },
+    "exchange_info_source": "https://data-api.binance.vision/api/v3/exchangeInfo",
+    "bstocks_assets": 80,
+    "assets_without_spot_pair": [],
+    "only_in_TRD_GRP_261": [],
+    "missing_from_TRD_GRP_261": []
+  },
+  "binance_futures_tradfi": {
+    "count": 188,
+    "by_asset_class": {
+      "etf": 37,
+      "stock": 151
+    },
+    "exchange_info_source": "https://www.binance.com",
+    "exchange_info_server_time": "2026-09-26T20:55:06Z",
+    "trading_but_not_in_exchange_info": [],
+    "by_underlying_type": {
+      "CN_EQUITY": 2,
+      "EQUITY": 163,
+      "HK_EQUITY": 15,
+      "KR_EQUITY": 8
+    }
+  },
+  "hyperliquid_hip3_stocks": {
+    "count": 121,
+    "by_asset_class": {
+      "etf": 21,
+      "stock": 100
+    },
+    "uncategorized_coins": [
+      "para:30Y",
+      "para:2Y",
+      "io:EWY"
+    ],
+    "dex_errors": {},
+    "annotation_errors": [],
+    "by_dex": {
+      "io": 6,
+      "mkts": 1,
+      "para": 21,
+      "xyz": 93
+    }
+  },
+  "review": {
+    "binance_spot_bstocks": {
+      "unknown": [],
+      "nasdaq_vs_binance_catalog": []
+    },
+    "binance_futures_tradfi": {
+      "unknown": [],
+      "nasdaq_vs_binance_catalog": [],
+      "us_ticker_not_confirmed": []
+    },
+    "hyperliquid_hip3_stocks": {
+      "unknown": [],
+      "nasdaq_vs_binance_catalog": []
+    }
+  }
+}
