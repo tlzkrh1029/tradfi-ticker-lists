@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-27T11:48:14Z",
+  "generated_at": "2026-09-27T12:25:57Z",
   "binance_equity_catalog_error": null,
   "binance_spot_bstocks": {
     "count": 80,
@@ -32,16 +32,16 @@
   "hyperliquid_hip3_stocks": {
     "count": 121,
     "by_asset_class": {
-      "etf": 20,
-      "stock": 100,
-      "unknown": 1
+      "etf": 21,
+      "stock": 100
     },
     "uncategorized_coins": [
       "para:30Y",
       "para:2Y",
       "io:EWY"
     ],
-    "uncategorized_kept": [
+    "uncategorized_kept": [],
+    "manual_references": [
       "io:EWY"
     ],
     "dex_errors": {},
@@ -68,13 +68,9 @@
       "trading_but_not_in_exchange_info": []
     },
     "hyperliquid_hip3_stocks": {
-      "unknown": [
-        "io:EWY"
-      ],
+      "unknown": [],
       "nasdaq_vs_binance_catalog": [],
-      "uncategorized_kept": [
-        "io:EWY"
-      ],
+      "uncategorized_kept": [],
       "dex_errors": {},
       "annotation_errors": []
     }

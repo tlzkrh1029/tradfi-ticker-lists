@@ -11,13 +11,15 @@ python3 fetch_tradfi_tickers.py --hl-categories stocks,indices   # 하이퍼리�
 python3 fetch_tradfi_tickers.py --include-delisted               # 하이퍼리퀴드 상장폐지(거래 중단) 종목까지 포함
 ```
 
-종료 코드는 0(정상), 1(한 거래소 이상 수집 실패), 2(목록은 저장했지만 `summary.json`의 `review`에 확인할 항목이 있음)입니다. 2026-09-27 실행은 `io:EWY` 때문에 2로 끝납니다(3절 참고).
+종료 코드는 0(정상), 1(한 거래소 이상 수집 실패), 2(목록은 저장했지만 `summary.json`의 `review`에 확인할 항목이 있음)입니다. 2026-09-27 실행은 0으로 끝났습니다.
+
+실행할 때마다 `output/`의 파일 4개를 새 결과로 덮어씁니다. 이전 결과를 남기려면 `--out`으로 다른 폴더를 지정하면 됩니다(예: `python fetch_tradfi_tickers.py --out output/2026-09-27`).
 
 | 목록 | 목록을 가져오는 기준 | 실제 티커를 얻는 곳 | 2026-09-27 결과 |
 |---|---|---|---|
 | 바이낸스 현물 bStocks | `get-all-asset`에서 `tags`에 `"bStocks"`가 있는 자산의 모든 현물 페어 (현재는 모두 USDT) | 같은 응답의 `uq` 필드 | 80개 (ETF 14, 주식 66) |
 | 바이낸스 선물 | `exchangeInfo`에서 `contractType == "TRADIFI_PERPETUAL"`, `underlyingType`이 `…EQUITY`, 상태가 `TRADING` 또는 `PENDING_TRADING` | `/fapi/v1/constituents`의 데이터 벤더 심볼 | 188개 (ETF 37, 주식 151) |
-| 하이퍼리퀴드 | 모든 HIP-3 dex의 `meta`에서 상장폐지되지 않은 종목 중 카테고리가 `stocks`인 것 | `perpAnnotation` 설명문의 `(Nasdaq: TSLA)` 같은 표기 | 121개 (ETF 20, 주식 100, 미확인 1) |
+| 하이퍼리퀴드 | 모든 HIP-3 dex의 `meta`에서 상장폐지되지 않은 종목 중 카테고리가 `stocks`인 것 | `perpAnnotation` 설명문의 `(Nasdaq: TSLA)` 같은 표기 | 121개 (ETF 21, 주식 100) |
 
 ETF 여부는 미국 상장 종목의 경우 Nasdaq Trader 심볼 디렉터리의 `ETF` 열로 판정하고, 바이낸스 자체 미국 주식 카탈로그의 `t`(STOCK/ETF) 필드로 교차 검증합니다. 2026-09-27 실행에서 두 출처가 어긋난 종목은 없었습니다.
 
@@ -53,7 +55,7 @@ GET https://fapi.binance.com/fapi/v1/constituents?symbol=STXXUSDT
 - **바이낸스 심볼이 실제 티커와 다를 수 있습니다.** 주식 티커가 기존 코인 티커와 겹치면 별칭을 씁니다. `BBXUSDT`는 BlackBerry(NYSE: BB), `STXXUSDT`는 Seagate(Nasdaq: STX), `QNTXUSDT`는 Quantinuum(Nasdaq: QNT)입니다. 특히 `STXX`는 Cboe BZX에 상장된 실제 2배 레버리지 ETF(Tradr 2X Long STX Daily ETF)의 티커이기 때문에, `baseAsset`으로 조회하면 Seagate가 ETF로 잘못 분류됩니다. `BRKBUSDT`의 실제 티커는 `BRK.B`입니다. 그래서 스크립트는 `constituents`에서 실제 티커를 읽습니다.
 - 한국(KR)과 중국(CN) 계약은 `constituents`가 `-1121 Invalid symbol`을 반환하므로 코드를 얻을 수 없습니다. 비미국 종목 25개는 표(`NON_US_UNDERLYINGS`)로 분류하고, 표에 없는 새 종목은 `unknown`으로 남깁니다. 표의 코드 중 22개는 바이낸스 상장 공지에 적힌 것입니다. `SKHYNIX`, `SAMSUNG`, `HYUNDAI`는 공지에 회사 이름만 있어서, 각 회사의 KRX 보통주 코드(000660, 005930, 005380)를 대응시켰습니다.
 - 바이낸스 상장 공지에도 "BBXUSDT Perpetual Contract tracks the price of BlackBerry Limited Common Stock (NYSE: BB)" 같은 문구가 있습니다. 공지 목록은 `https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=1&catalogId=48&pageNo=1&pageSize=50`(`pageNo`와 `pageSize`가 없으면 HTTP 400), 본문은 `…/cms/article/detail/query?articleCode=<code>`로 받을 수 있습니다.
-- `www.binance.com` 미러의 `exchangeInfo`는 서버에서 캐시한 응답이라 몇 시간(관측치 약 14시간) 늦습니다. 스크립트는 실시간인 `/fapi/v1/ticker/24hr`과 비교해서, 아직 `exchangeInfo`에 없는 새 상장 심볼을 `trading_but_not_in_exchange_info`에 기록합니다.
+- 선물 `exchangeInfo`는 캐시된 응답이라 몇 시간(관측치 약 15시간) 늦습니다. 이 지연은 미러만의 문제가 아닙니다. 2026-09-27 12:09 UTC에 한국에서 공식 서버 `fapi.binance.com`으로 받은 응답도, 같은 날 `www.binance.com` 미러로 받은 응답과 똑같이 `serverTime`이 2026-09-26 20:55:06 UTC였습니다. 그래서 스크립트는 실시간인 `/fapi/v1/ticker/24hr`과 비교해서, 아직 `exchangeInfo`에 없는 새 상장 심볼을 `trading_but_not_in_exchange_info`에 기록합니다.
 - 같은 기초 자산을 추적하는 계약이 둘인 경우가 있습니다. `SPCXUSDT`와 `SPCXUSD1`(USD1 마진), `HK0700USDT`(HKD 퀀토)와 `TENCENTUSDT`가 그렇습니다. 고유 종목 수를 세려면 `listing` 열로 중복을 제거하면 됩니다.
 - 상장폐지된 계약은 `SETTLING` 상태로 `exchangeInfo`에 남으므로 상태 필터가 필요합니다. TradFi 선물을 거래하려면 계정에서 TradFi-Perps 약관에 동의해야 하지만(`POST /fapi/v1/stock/contract`), 시세와 목록 조회에는 필요하지 않습니다. COIN-M(dapi)에는 TradFi 계약이 없습니다.
 
@@ -73,7 +75,9 @@ GET https://fapi.binance.com/fapi/v1/constituents?symbol=STXXUSDT
 - 카테고리는 배포자가 자유롭게 입력하는 문자열입니다. 그래서 `stocks`와 `stock`, `fx`와 `FX`가 섞여 있습니다. ETF도 `stocks`에 들어 있으며, 별도의 ETF 카테고리는 없습니다.
 - `perpCategories`만 쓰면 안 됩니다. 상장폐지된 코인의 카테고리도 남아 있기 때문입니다. 2026-09-27 기준으로 `flx`, `vntl`, `hyna`, `km`, `abcd`, `cash`는 전 종목이 `isDelisted`이고, 주식 선물이 거래되는 dex는 `xyz`(trade.xyz, 93개), `para`(Paragon, 21개), `io`(EntropyIO, 6개), `mkts`(Markets by Kinetiq, 1개)입니다.
 - 코인 이름은 실제 티커가 아닐 수 있습니다. `xyz:SKHX`는 KRX의 SK hynix 원주(000660)를 추적하지만, 미국의 `SKHX`는 2배 레버리지 ETF입니다. `xyz:PURRDAT`은 Nasdaq `PURR`이고, `mkts:USBOND`는 displayName이 `TLT`입니다. 그래서 스크립트는 설명문에 적힌 상장 티커를 우선 쓰고, 그다음 displayName, 마지막으로 코인 이름을 씁니다. 설명문이 KRX·HKEX·SSE·TSE 같은 비미국 거래소를 가리키면 미국 디렉터리 조회를 건너뜁니다.
-- 카테고리도 annotation도 없는 활성 코인이 3개 있습니다(`io:EWY`, `para:2Y`, `para:30Y`). 스크립트는 세 코인을 모두 `summary.json`의 `uncategorized_coins`에 기록합니다. 그중 주식을 상장한 dex에 있고 코인 이름이 미국 상장 티커와 같은 코인(`io:EWY`)만 CSV에 넣되, 이름이 같다는 것만으로는 무엇을 추적하는지 확인할 수 없으므로 `asset_class`를 `unknown`으로 두고 `asset_source`에 "coin name matches US etf EWY"를 적습니다. 이름만 믿으면 `--include-delisted`에서 `mkts:GOLD`가 Gold.com, Inc. 주식으로 분류되는 문제가 생깁니다.
+- 카테고리도 annotation도 없는 활성 코인이 3개 있습니다(`io:EWY`, `para:2Y`, `para:30Y`). 스크립트는 세 코인을 모두 `summary.json`의 `uncategorized_coins`에 기록합니다. 이런 코인은 이름만으로 무엇을 추적하는지 확인할 수 없습니다. 이름만 믿으면 `--include-delisted`에서 `mkts:GOLD`가 Gold.com, Inc. 주식으로 분류되는 문제가 생깁니다. 그래서 스크립트는 두 가지로 처리합니다.
+  - `HL_MANUAL_REFERENCES` 표에 등록한 코인은 표에 적힌 상장 종목으로 분류하고, `asset_source`에 `manual reference`라고 적습니다. 현재 `io:EWY` 하나를 iShares MSCI South Korea ETF(NYSE Arca: EWY)로 등록했습니다. 같은 기초 자산인 `xyz:EWY`가 있고, `io`의 다른 코인도 미국 티커를 그대로 이름으로 쓰기 때문입니다. 배포자가 나중에 annotation을 등록하면 그 내용이 표보다 우선합니다.
+  - 표에 없는 코인은 주식을 상장한 dex에 있고 이름이 미국 상장 티커와 같을 때만 CSV에 넣습니다. 이때 `asset_class`는 `unknown`, `asset_source`는 "coin name matches US …"로 적고, `review`의 `uncategorized_kept`에 올려서 직접 확인하도록 합니다.
 - `isDelisted`는 영구 폐지만 뜻하지 않을 수 있습니다. HIP-3 배포자는 `haltTrading`으로 거래를 멈췄다가 다시 열 수 있습니다. 예를 들어 trade.xyz는 2026-09-28 KIOXIA 주식 분할 때 거래를 잠시 중단한다고 공지했습니다. 그러므로 목록은 저장해 두고 쓰기보다 필요할 때마다 다시 받는 편이 안전합니다.
 - `para:UNITREE`의 설명문에는 아직 "ahead of its public listing"이라고 적혀 있지만, Unitree는 이미 상하이 STAR 마켓(688836)에 상장했습니다. 같은 코인의 키워드와 `xyz:UNITREE`, 바이낸스 `UNITREEUSDT`가 모두 이 코드를 가리키므로, 설명문이 갱신되지 않은 것으로 봐야 합니다.
 - 같은 종목이 여러 dex에 따로 상장되어 있고, 호가창과 펀딩도 dex마다 따로 움직입니다(예: `xyz:EWY`와 `io:EWY`, `xyz:AVGO`와 `para:AVGO`). 주식 선물이 활성화된 네 dex는 모두 USDC(`collateralToken` 0)를 담보로 씁니다. USDH, USDE, USDT0를 쓰던 dex는 현재 전 종목이 상장폐지 상태입니다.
@@ -85,6 +89,7 @@ GET https://fapi.binance.com/fapi/v1/constituents?symbol=STXXUSDT
 |---|---|---|
 | 미국 상장 종목 | Nasdaq Trader `nasdaqlisted.txt`와 `otherlisted.txt`의 `ETF` 열 | 바이낸스 `bapi/equity/v1/public/equity/symbol/get-symbols-static`의 `t` |
 | 하이퍼리퀴드의 비미국 종목 | `perpAnnotation` 설명문과 키워드(ETF, "the fund", "Bull 3X" 등) | 없음 |
+| annotation이 없는 하이퍼리퀴드 코인 | `HL_MANUAL_REFERENCES` 표 (현재 `io:EWY`) | 표의 티커를 Nasdaq 디렉터리로 분류 |
 | 바이낸스 선물의 비미국 종목 | `NON_US_UNDERLYINGS` 표 (25개 중 22개 코드는 상장 공지 기준) | HK 종목은 `constituents`의 HKEX 코드와 대조 |
 
 - 레버리지·인버스 ETF(TQQQ, SOXL, TSLL 등), 채권 ETF(TLT, TMF), 변동성 ETP(UVXY)는 모두 `etf`로 분류합니다.
@@ -107,6 +112,6 @@ GET https://fapi.binance.com/fapi/v1/constituents?symbol=STXXUSDT
 ## 한계
 
 - 바이낸스의 `bapi` 엔드포인트(`get-all-asset`, `get-symbols-static`, 공지 API)는 웹사이트 내부용이라 공식 지원 대상이 아닙니다.
-- `api.binance.com`과 `fapi.binance.com`은 일부 지역(미국 등)에서 HTTP 451을 반환합니다. 이때 스크립트는 `data-api.binance.vision`과 `www.binance.com` 미러로 넘어갑니다. 이 결과물도 미러로 받았으며, 선물 `exchangeInfo`는 2026-09-26 20:55 UTC 시점의 캐시였습니다. 실시간 티커와 비교했을 때 누락된 심볼은 없었습니다.
+- `api.binance.com`과 `fapi.binance.com`은 일부 지역(미국 등)에서 HTTP 451을 반환합니다. 이때 스크립트는 `data-api.binance.vision`과 `www.binance.com` 미러로 넘어갑니다. 저장소의 결과물은 미러로 받은 것입니다. 한국에서 공식 서버로 다시 받아도 세 목록의 개수는 같았고, 실시간 티커와 비교했을 때 누락된 심볼도 없었습니다.
 - 한국·중국 선물은 실제 코드를 API로 확인할 수 없으므로, 새 종목이 생기면 `NON_US_UNDERLYINGS` 표를 갱신해야 합니다. 홍콩 종목은 `constituents`의 HKEX 코드와 표를 대조해서, 다르면 `unknown`으로 표시합니다. Pre-IPO 계약은 표와 관계없이 `underlyingType`에 따라 `premarket`으로 분류됩니다(`--include-non-equity`를 켰을 때만 포함).
 - 결과 CSV는 2026-09-27 스냅샷입니다. 세 거래소 모두 매주 종목을 추가하므로, 최신 목록이 필요하면 스크립트를 다시 실행해야 합니다.

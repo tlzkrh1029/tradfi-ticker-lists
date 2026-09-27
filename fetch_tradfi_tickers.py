@@ -11,7 +11,8 @@ ETF vs single-stock classification (no venue publishes this flag):
   futures       Binance renames tickers that collide with crypto assets
                 (BBXUSDT = BlackBerry "BB", STXXUSDT = Seagate "STX").
   Hyperliquid   the reference listing is parsed from perpAnnotation
-                ("(Nasdaq: TSLA)", "(KRX: 000660)").
+                ("(Nasdaq: TSLA)", "(KRX: 000660)"); coins with no
+                annotation at all can be pinned in HL_MANUAL_REFERENCES.
   Non-US        NON_US_UNDERLYINGS below, checked against Binance listing
                 announcements; anything missing from it is "unknown".
 Rows that cannot be resolved are written as "unknown" and listed under
@@ -342,6 +343,15 @@ SHARE_TEXT = re.compile(r"\b(share|shares|stock|ads|a-share|h-share)\b", re.I)
 CATEGORY_CLASS = {"indices": "index", "commodities": "commodity", "fx": "fx", "preipo": "preipo",
                   "crypto": "crypto", "rates": "rates"}
 
+# Coins whose deployer published no annotation at all, pinned by hand to
+# the listing they track. A reference in the deployer's own annotation,
+# once one appears, takes precedence.
+HL_MANUAL_REFERENCES = {
+    # iShares MSCI South Korea ETF, the same underlying as xyz:EWY; the io
+    # dex names its other coins after their US tickers too (DRAM, SNDK).
+    "io:EWY": ("NYSE Arca", "EWY"),
+}
+
 
 def normalize_category(c):
     c = (c or "").strip().lower()
@@ -386,7 +396,11 @@ def hyperliquid_hip3(us, include_delisted=False, categories=("stocks",)):
                 # coin name is a US listing; the name alone proves nothing
                 # (mkts:GOLD is not Gold.com, Inc.).
                 uncategorized.append(coin)
-                if "stocks" in categories and equity_dex and us.known(coin.split(":", 1)[1]):
+                if "stocks" not in categories:
+                    continue
+                if coin in HL_MANUAL_REFERENCES:
+                    candidates.append((d, meta, u, cat))
+                elif equity_dex and us.known(coin.split(":", 1)[1]):
                     kept.append(coin)
                     candidates.append((d, meta, u, cat))
 
@@ -409,6 +423,9 @@ def hyperliquid_hip3(us, include_delisted=False, categories=("stocks",)):
         display = ann.get("displayName") or short.get("displayName") or ""
         says_etf = bool(ETF_TEXT.search(description)) or "etf" in [k.lower() for k in keywords]
         exch, ref = reference_listing(description)
+        manual = exch is None and coin in HL_MANUAL_REFERENCES
+        if manual:
+            exch, ref = HL_MANUAL_REFERENCES[coin]
         us_ref = exch is None or exch.upper() in US_EXCHANGES
         listing = f"{exch}: {ref}" if exch else ""
         sec_name = bn_type = ""
@@ -422,7 +439,7 @@ def hyperliquid_hip3(us, include_delisted=False, categories=("stocks",)):
             # displayName and coin name are trusted only when the deployer
             # categorised the coin and the annotation was read: a failed read
             # would otherwise turn xyz:SKHX (KRX 000660) into the US 2x ETF SKHX.
-            keys = [(ref, "annotation ticker")]
+            keys = [(ref, "manual reference" if manual else "annotation ticker")]
             if cat and not err:
                 keys += [(display, "displayName"), (ticker, "coin name")]
             if us_ref:
@@ -462,7 +479,9 @@ def hyperliquid_hip3(us, include_delisted=False, categories=("stocks",)):
             "delisted": bool(u.get("isDelisted")),
             "description": description.replace("\n", " "),
         })
-    extra = {"uncategorized_coins": uncategorized, "uncategorized_kept": kept, "dex_errors": errors,
+    extra = {"uncategorized_coins": uncategorized, "uncategorized_kept": kept,
+             "manual_references": sorted(c for c in HL_MANUAL_REFERENCES if c in {x[2]["name"] for x in candidates}),
+             "dex_errors": errors,
              "annotation_errors": [c[2]["name"] for c, (_, e) in zip(candidates, details) if e]}
     return sorted(rows, key=lambda r: (r["dex"], r["ticker"])), extra
 
